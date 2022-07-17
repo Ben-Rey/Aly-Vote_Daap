@@ -15,7 +15,7 @@ import useProposals from 'hooks/use-proposal'
 import useUser from 'hooks/use-user'
 import { ToastContainer } from 'react-toastify'
 import { getStatusIdByFunction } from 'utils'
-import 'app.css'
+import 'App.css'
 
 // TODO: Verifier toutes les actions qui pourraient revert
 // TODO: Verifier les deconnection de compte
