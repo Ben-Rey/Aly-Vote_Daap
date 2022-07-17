@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import { IButtonProps } from './IButtonProps'
 
 const Button = ({
@@ -6,6 +7,7 @@ const Button = ({
   variant = 'filled',
   disabled = false,
   children,
+  loading = false,
   ...props
 }: IButtonProps) => {
   const variants = {
@@ -17,7 +19,9 @@ const Button = ({
 
   return (
     <button
-      className={`${className || ''} btn ${btnDisabled} ${variants[variant]}`}
+      className={`${className || ''} btn ${btnDisabled} ${variants[variant]} ${
+        loading && 'btn-loading'
+      }`}
       onClick={onClick}
       {...props}
     >

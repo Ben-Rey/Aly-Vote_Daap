@@ -5,4 +5,5 @@ export interface IButtonProps {
   disabled?: boolean
   variant?: 'outlined' | 'filled'
   children?: React.ReactNode
+  loading?: boolean
 }

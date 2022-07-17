@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { actions } from 'context'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import useEth from '../context/useEth'
 import useEvent from './use-event'
 import { toast } from 'react-toastify'
@@ -10,6 +10,7 @@ const useStatus = () => {
     state: { status, contract, accounts },
     dispatch
   } = useEth()
+  const [statusLoading, setStatusLoading] = useState(false)
 
   useEvent(
     'WorkflowStatusChange',
@@ -69,16 +70,18 @@ const useStatus = () => {
       if (status?.toNumber() >= 5) return
 
       try {
+        setStatusLoading(true)
         await contract.methods.nextStatus().send({
           from: accounts[0]
         })
       } catch (error) {
         console.error(error)
       }
+      setStatusLoading(false)
     }
   }
 
-  return { status, reloadStatus, nextStatus, restVotingSystem }
+  return { status, reloadStatus, nextStatus, statusLoading, restVotingSystem }
 }
 
 export default useStatus

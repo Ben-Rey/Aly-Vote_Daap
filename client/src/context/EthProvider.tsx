@@ -3,8 +3,17 @@ import Web3 from 'web3'
 import EthContext from './EthContext'
 import { reducer, actions, initialState } from './state'
 
-const CHAIN_ID = 1337
-const CHAIN_ID_HEX = CHAIN_ID.toString(16)
+const network = import.meta.env.VITE_APP_NETWORK as string
+
+const networks = {
+  local: { url: 'ws://localhost:8545', chainId: 1337 },
+  ropsten: {
+    url: `wss://ropsten.infura.io/ws/v3/${import.meta.env.VITE_INFURA_ID}`,
+    chainId: 3
+  }
+}
+
+const CHAIN_ID_HEX = networks[network].chainId.toString(16)
 
 // Erreur si pas metamask
 function EthProvider({ children }: { children: React.ReactNode }) {
@@ -12,7 +21,8 @@ function EthProvider({ children }: { children: React.ReactNode }) {
 
   const checkNetwork = useCallback(async (web3: any) => {
     const ChainId = await web3.eth.getChainId()
-    if (ChainId !== CHAIN_ID) {
+
+    if (ChainId !== networks[network]) {
       try {
         await web3.eth.net.getNetworkType()
         await window.ethereum.request({
@@ -28,7 +38,11 @@ function EthProvider({ children }: { children: React.ReactNode }) {
   const init = useCallback(
     async (artifact: any) => {
       if (artifact) {
-        const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545')
+        console.log(Web3.givenProvider)
+        const web3 = new Web3(
+          Web3.givenProvider ||
+            new Web3.providers.WebsocketProvider(networks[network])
+        )
         let accounts: string[] = []
         if (window.ethereum.isConnected())
           accounts = await web3.eth.requestAccounts()

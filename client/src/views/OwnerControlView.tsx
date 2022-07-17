@@ -50,7 +50,8 @@ const OwnerControl = () => {
   const {
     state: { status, voters }
   } = useEth()
-  const { nextStatus, restVotingSystem } = useStatus()
+  const { nextStatus, statusLoading, restVotingSystem } = useStatus()
+  console.log(statusLoading)
   const { addVoter, getVoters } = useVoters()
   // TODO: Check if voter already registered
   const registeringVoters =
@@ -80,6 +81,7 @@ const OwnerControl = () => {
               <Button
                 className=" border-white  text-white hover:bg-white hover:text-black"
                 onClick={nextStatus}
+                loading={statusLoading}
               >
                 <span>
                   {(status && getStatusActionById(status.add(new BN(1)))) || ''}
@@ -90,7 +92,7 @@ const OwnerControl = () => {
           {registeringVoters && (
             <>
               {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
-              <label htmlFor="add-voter-modal" className="modal-button btn">
+              <label htmlFor={`add-voter-modal" className="modal-button btn`}>
                 Add Voter
               </label>
               <ModalAddVoter onAdd={addVoter} />
