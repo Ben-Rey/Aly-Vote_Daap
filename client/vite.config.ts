@@ -9,10 +9,10 @@ export default defineConfig({
     alias: {
       web3: 'web3/dist/web3.min.js'
     }
-  },
-  build: {
-    rollupOptions: {
-      external: ['react-router-dom']
-    }
   }
+  // build: {
+  //   rollupOptions: {
+  //     external: ['react-router-dom']
+  //   }
+  // }
 })
