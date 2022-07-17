@@ -3,12 +3,7 @@ import { actions } from 'context'
 import { useCallback, useEffect } from 'react'
 import useEth from '../context/useEth'
 import useEvent from './use-event'
-
-// const options = {
-//   fromBlock: 0,
-//   address: ['address-1', 'address-2'], //Only get events from specific addresses
-//   topics: [] //What topics to subscribe to
-// }
+import { toast } from 'react-toastify'
 
 const useStatus = () => {
   const {
@@ -27,6 +22,24 @@ const useStatus = () => {
       })
     }
   )
+
+  useEvent(
+    'LogResetVotingSystem',
+    (event: { returnValues: { newStatus: any } }) => {
+      toast('Voting System Reset!')
+    }
+  )
+
+  const restVotingSystem = useCallback(async () => {
+    if (contract && accounts) {
+      await contract.methods.resetVotingSystem().send({ from: accounts[0] })
+
+      dispatch({
+        type: actions.reset,
+        data: null
+      })
+    }
+  }, [contract, accounts, dispatch])
 
   const reloadStatus = useCallback(async () => {
     if (contract && accounts) {
@@ -65,7 +78,7 @@ const useStatus = () => {
     }
   }
 
-  return { status, reloadStatus, nextStatus }
+  return { status, reloadStatus, nextStatus, restVotingSystem }
 }
 
 export default useStatus

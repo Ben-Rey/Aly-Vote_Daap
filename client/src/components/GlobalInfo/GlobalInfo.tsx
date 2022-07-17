@@ -2,7 +2,7 @@ import { useEth } from 'context'
 import useUser from 'hooks/use-user'
 import { memo, useEffect } from 'react'
 
-import { getStatusLabelById } from 'utils'
+import { getStatusLabelById, votingStatus } from 'utils'
 
 const GlobalInfo = () => {
   const {
@@ -17,7 +17,9 @@ const GlobalInfo = () => {
 
   // TODO: check if voter or admin or not registered
 
-  const style = { '--value': 70 } as React.CSSProperties
+  const percent = status && votingStatus[status?.toNumber()].percent
+
+  const style = { '--value': percent } as React.CSSProperties
   const radClass = 'radial-progress absolute right-10 top-1/2 -translate-y-1/2'
 
   return (
@@ -40,8 +42,10 @@ const GlobalInfo = () => {
             <span>{contract?._address}</span>
           </p>
         </div>
-        <div className={radClass} style={style}>
-          70%
+        <div className="flex w-10/12 flex-col space-y-3">
+          <div className={radClass} style={style}>
+            {percent}%
+          </div>
         </div>
       </div>
     </div>

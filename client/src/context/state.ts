@@ -8,7 +8,8 @@ const actions = {
   setWinningProposalId: 'SET_WINNIG_PROPOSAL_ID',
   registerEvent: 'REGISTER_EVENT',
   setUserInfo: 'SET_USER_INFO',
-  setVoters: 'SET_VOTERS'
+  setVoters: 'SET_VOTERS',
+  reset: 'RESET'
 }
 
 const initialState = {
@@ -22,7 +23,8 @@ const initialState = {
   winningProposalId: null,
   events: [],
   userInfo: null,
-  voters: null
+  voters: null,
+  lastSessionBlock: new BN(0)
 }
 
 const reducer = (state: any, action: { type: string; data: any }) => {
@@ -44,6 +46,15 @@ const reducer = (state: any, action: { type: string; data: any }) => {
       return { ...state, userInfo: data }
     case actions.setVoters:
       return { ...state, voters: data }
+    case actions.reset:
+      return {
+        ...state,
+        status: null,
+        proposals: [],
+        winningProposalId: null,
+        userInfo: null,
+        voters: null
+      }
 
     default:
       throw new Error('Undefined reducer action type')

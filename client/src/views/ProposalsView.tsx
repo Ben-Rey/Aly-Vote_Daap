@@ -15,8 +15,6 @@ const ProposalView = ({ status }: { status: BN }) => {
   const { addProposal, proposals, winningProposalId } = useProposals()
   const { vote } = useVote()
 
-  useEvent('ProposalRegistered', () => toast('Proposal Added!'))
-
   // custom hook ?
   const votingStarted =
     status?.toNumber() === getStatusIdByFunction('VotingSessionStarted')

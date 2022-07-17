@@ -10,8 +10,8 @@ const useEvent = (event: string, onSuccessCallback: any) => {
   const setVoterRegisteredEvent = useCallback(async () => {
     if (contract && event) {
       await contract.events[event]()
-        .on('data', (event: any) => {
-          onSuccessCallback(event)
+        .on('data', (newEvent: any) => {
+          onSuccessCallback(newEvent)
         })
         .on('changed', (changed: any) => console.log(changed))
         .on('error', (err: any) => alert(err))

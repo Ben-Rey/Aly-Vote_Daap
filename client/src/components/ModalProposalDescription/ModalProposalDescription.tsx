@@ -1,14 +1,24 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 import { IProposal } from 'models/IProposal'
 
-const ModalProposalDescription = ({ proposal }: { proposal: IProposal }) => {
+const ModalProposalDescription = ({
+  proposal,
+  votedProposalId
+}: {
+  proposal: IProposal
+  votedProposalId: string
+}) => {
   return (
     <div>
-      <input type="checkbox" id="prop-desc-modal" className="modal-toggle" />
+      <input
+        type="checkbox"
+        id={`prop-desc-modal-${votedProposalId}`}
+        className="modal-toggle"
+      />
       <div className="modal">
         <div className="modal-box relative">
           <label
-            htmlFor="prop-desc-modal"
+            htmlFor={`prop-desc-modal-${votedProposalId}`}
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
             ✕

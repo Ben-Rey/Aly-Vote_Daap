@@ -9,7 +9,14 @@ import { getStatusFuncById } from '../utils/index'
 
 const useProposals = () => {
   const {
-    state: { status, contract, accounts, proposals, winningProposalId },
+    state: {
+      status,
+      contract,
+      accounts,
+      proposals,
+      winningProposalId,
+      lastSessionBlock
+    },
     dispatch
   } = useEth()
 
@@ -19,7 +26,7 @@ const useProposals = () => {
     if (status && accounts) {
       const option = {
         // filter: { myIndexedParam: [20, 23] }, // Using an array means OR: e.g. 20 or 23
-        fromBlock: 0,
+        fromBlock: lastSessionBlock,
         toBlock: 'latest'
       }
       const pastEvents = await contract.getPastEvents(

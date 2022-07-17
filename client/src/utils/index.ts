@@ -1,5 +1,4 @@
 import BN from 'bn.js'
-import { actions } from 'context'
 
 export function classNames(...classes: unknown[]): string {
   return classes.filter(Boolean).join(' ')
@@ -9,29 +8,40 @@ export const votingStatus = [
   {
     function: 'RegisteringVoters',
     label: 'Registering Voters',
-    action: 'Register Voters'
+    action: 'Register Voters',
+    percent: 0
   },
   {
     function: 'ProposalsRegistrationStarted',
     label: 'Proposals Registration Started',
-    action: 'Start Proposals Registration'
+    action: 'Start Proposals Registration',
+    percent: 20
   },
   {
     function: 'ProposalsRegistrationEnded',
     label: 'Proposals Registration Ended',
-    action: 'End Proposals Registration'
+    action: 'End Proposals Registration',
+    percent: 40
   },
   {
     function: 'VotingSessionStarted',
     label: 'Voting Session Started',
-    action: 'Start Voting'
+    action: 'Start Voting',
+    percent: 60
   },
   {
     function: 'VotingSessionEnded',
     label: 'Voting Session Ended',
-    action: 'End Voting'
+    action: 'End Voting',
+    percent: 80
   },
-  { function: 'VotesTallied', label: 'Votes Tallied', action: 'Tally Votes' }
+
+  {
+    function: 'VotesTallied',
+    label: 'Votes Tallied',
+    action: 'Tally Votes',
+    percent: 100
+  }
 ]
 
 export const getStatusFuncById = (id: BN) => {

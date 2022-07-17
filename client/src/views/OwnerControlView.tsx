@@ -13,6 +13,7 @@ import useProposals from 'hooks/use-proposal'
 
 const Voter = ({ voter }: { voter: IUser }) => {
   const { proposals } = useProposals()
+
   return (
     <div className="my-4 flex flex-col space-y-2 rounded-md bg-slate-100 p-4">
       <p>
@@ -27,16 +28,17 @@ const Voter = ({ voter }: { voter: IUser }) => {
             <div>
               <ModalProposalDescription
                 proposal={proposals[voter.votedProposalId]}
+                votedProposalId={voter.votedProposalId}
               />
               <label
-                htmlFor="prop-desc-modal"
+                htmlFor={`prop-desc-modal-${voter.votedProposalId}`}
                 className=" flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-gray-700 p-3 text-xs text-white hover:brightness-125"
               >
                 {voter.votedProposalId}
               </label>
             </div>
           ) : (
-            'Not voted yet'
+            'Has not voted yet'
           )}
         </span>
       </div>
@@ -48,7 +50,7 @@ const OwnerControl = () => {
   const {
     state: { status, voters }
   } = useEth()
-  const { nextStatus } = useStatus()
+  const { nextStatus, restVotingSystem } = useStatus()
   const { addVoter, getVoters } = useVoters()
   // TODO: Check if voter already registered
   const registeringVoters =
@@ -67,6 +69,11 @@ const OwnerControl = () => {
     <div>
       <div className="flex flex-col space-x-3">
         <div className=" space-x-3">
+          {votingSessionEnded && (
+            <button className="btn" onClick={restVotingSystem}>
+              reset voting system
+            </button>
+          )}
           {!votingSessionEnded && (
             <Fragment>
               <h3 className=" p-4 font-bold text-gray-200">Owner Controls</h3>

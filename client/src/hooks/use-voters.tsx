@@ -6,7 +6,7 @@ import IUser from '../models/IUser'
 
 const useVoters = () => {
   const {
-    state: { status, contract, accounts, voters },
+    state: { status, contract, accounts, voters, lastSessionBlock },
     dispatch
   } = useEth()
 
@@ -14,7 +14,7 @@ const useVoters = () => {
     if (status && accounts) {
       const option = {
         // filter: { myIndexedParam: [20, 23] }, // Using an array means OR: e.g. 20 or 23
-        fromBlock: 0,
+        fromBlock: lastSessionBlock,
         toBlock: 'latest'
       }
       const pastEvents = await contract.getPastEvents('VoterRegistered', option)
@@ -40,8 +40,19 @@ const useVoters = () => {
   })
   // INPROGRESS: Add voter
   const addVoter = async (address: string) => {
+    // check if already registered
+
     if (status && accounts) {
       if (status?.toNumber() > 0) return
+
+      const voter = await contract.methods
+        .getVoter(address)
+        .call({ from: accounts[0] })
+
+      if (voter.isRegistered) {
+        toast('Voter already registered!')
+        return
+      }
 
       const res = await contract.methods.addVoter(address).send({
         from: accounts[0]

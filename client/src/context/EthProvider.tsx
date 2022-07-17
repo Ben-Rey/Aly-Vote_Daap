@@ -34,19 +34,29 @@ function EthProvider({ children }: { children: React.ReactNode }) {
           accounts = await web3.eth.requestAccounts()
         const networkID = await web3.eth.net.getId()
         const { abi } = artifact
-        let address, contract
+        let address, contract, lastSessionBlock
         // Switch network ID
         checkNetwork(web3)
         try {
           address = artifact.networks[networkID].address
           contract = new web3.eth.Contract(abi, address)
+          lastSessionBlock = await contract.methods
+            .lastSessionBlock()
+            .call({ from: accounts[0] })
         } catch (err) {
           console.error(err)
           console.error('contract not deployed')
         }
         dispatch({
           type: actions.init,
-          data: { artifact, web3, accounts, networkID, contract }
+          data: {
+            artifact,
+            web3,
+            accounts,
+            networkID,
+            contract,
+            lastSessionBlock
+          }
         })
       }
     },

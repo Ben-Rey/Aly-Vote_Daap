@@ -4,10 +4,10 @@ pragma solidity 0.8.14;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Alyra Voting Contract
-/// @author Benjamin Reynes => benjmain@morio.co
+/// @author Benjamin Reynes benjmain@morio.co
 contract Voting is Ownable {
     uint256 public winningProposalID;
-
+    uint256 public lastSessionBlock = block.number;
     struct Voter {
         bool isRegistered;
         bool hasVoted;
@@ -30,6 +30,7 @@ contract Voting is Ownable {
 
     WorkflowStatus public workflowStatus;
     Proposal[] proposalsArray;
+    address[] votersAddressArray;
     mapping(address => Voter) voters;
 
     event VoterRegistered(address voterAddress);
@@ -39,21 +40,39 @@ contract Voting is Ownable {
     );
     event ProposalRegistered(uint256 proposalId);
     event Voted(address voter, uint256 proposalId);
+    event LogWithdraw(address user, uint256 amount);
     event LogReceive(address user, uint quantity);
     event LogFallback(address user);
+    event LogResetVotingSystem();
 
-    modifier onlyVoters() {
-        require(voters[msg.sender].isRegistered, "You're not a voter");
+
+    /**
+     * @notice Allows to verify if it's a voter or the Owner
+     */
+    modifier onlyVotersOrOwner() {
+        require(voters[msg.sender].isRegistered || msg.sender == owner(),  "You're not a voter");
         _;
     }
 
+    /**
+     * @notice Allows to verify if it's a voter or not.
+     */
+    modifier onlyVoters() {
+        require(voters[msg.sender].isRegistered,  "You're not a voter");
+        _;
+    }
+
+    /**
+     * @notice Allows to verify if we are in the right status
+     */
     modifier inStatus(WorkflowStatus _status) {
         require(workflowStatus == _status, "Action not allowed in this status");
         _;
     }
 
-    // on peut faire un modifier pour les états
     /**
+     * @notice Allows contract to receive Ethers (Security)
+     *
      * @dev Emit an event if ethers are sent to the contract.
      */
     receive() external payable {
@@ -61,6 +80,8 @@ contract Voting is Ownable {
     }
 
     /**
+     * @notice Allows to handle bad calls (Security)
+     *
      * @dev Emit event if bad call.
      */
     fallback() external {
@@ -75,20 +96,38 @@ contract Voting is Ownable {
     * @param amount the amount to withdraw.
     */
     function withdraw(uint amount) external onlyOwner {
-        msg.sender.call{value: amount}("");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        if (success) {
+            emit LogWithdraw(msg.sender, amount);
+        }
+
     }
 
     // ::::::::::::: GETTERS ::::::::::::: //
 
+    /**
+    * @notice getVoter Function, returns the voter object.
+    *
+    * @dev Only Registered Voters can access this fuction.
+    *
+    * @param _addr the address of the desired voter.
+    */
     function getVoter(address _addr)
         external
         view
-        onlyVoters
+        onlyVotersOrOwner
         returns (Voter memory)
     {
         return voters[_addr];
     }
 
+    /**
+    * @notice getProposal Function, returns the proposal object.
+    *
+    * @dev Only Registered Voters can access this fuction.
+    *
+    * @param _id the id of the desired proposal.
+    */
     function getOneProposal(uint256 _id)
         external
         view
@@ -98,27 +137,32 @@ contract Voting is Ownable {
         return proposalsArray[_id];
     }
 
-    function getProposals()
-        external
-        view
-        onlyVoters
-        returns (Proposal[] memory)
-    {
-        return proposalsArray;
-    }
     // ::::::::::::: REGISTRATION ::::::::::::: //
-
+    /**
+    * @notice addVoter Function, registers a voter. Only the owner of the contract can register a voter.
+    *
+    * @dev Emit an event on success.
+    *
+    * @param _addr the address of the voter.
+    */
     function addVoter(address _addr) external onlyOwner inStatus(WorkflowStatus.RegisteringVoters) {
 
         require(voters[_addr].isRegistered != true, "Already registered");
 
+        votersAddressArray.push(_addr);
         voters[_addr].isRegistered = true;
         emit VoterRegistered(_addr);
     }
 
     // ::::::::::::: PROPOSAL ::::::::::::: //
 
-
+    /**
+    * @notice addProposal Function, registers a proposal. Only the owner of the contract can register a proposal
+    *
+    * @dev Emit an event on success.
+    *
+    * @param _desc the description of the proposal.
+    */
     function addProposal(string memory _desc) external onlyVoters inStatus(WorkflowStatus.ProposalsRegistrationStarted) {
 
         require(
@@ -133,7 +177,13 @@ contract Voting is Ownable {
     }
 
     // ::::::::::::: VOTE ::::::::::::: //
-
+    /**
+    * @notice setVote Function, votes for a proposal. Only Registered Voters can access this fuction.
+    *
+    * @dev Emit an event on success.
+    *
+    * @param _id the id of the proposal to vote for.
+    */
     function setVote(uint256 _id) external onlyVoters inStatus(WorkflowStatus.VotingSessionStarted) {
 
         require(voters[msg.sender].hasVoted != true, "You have already voted");
@@ -152,14 +202,31 @@ contract Voting is Ownable {
     // ::::::::::::: STATE ::::::::::::: //
     
     /**
-     * @notice Change the status to the next 
-     * @dev Only owner function
-     */
+    * @notice nextStatus Function, change to the next status. Only the owner of the contract can change the status
+    *
+    * @dev Emit an event on success, revert if status equal to five
+    */
     function nextStatus() external onlyOwner {
         require(uint256(workflowStatus) < 5, "No status left");
 
         WorkflowStatus prevStatus = workflowStatus;
         workflowStatus = WorkflowStatus(uint256(workflowStatus) + 1);
         emit WorkflowStatusChange(prevStatus, workflowStatus);
+    }
+
+    /**
+    * @notice Reset the voting system
+    *
+    * @dev Emit an event on success, reset workflowStatus, proposalsArray, winningProposalID, voters
+    */
+    function resetVotingSystem() external onlyOwner inStatus(WorkflowStatus.VotesTallied) {
+        for (uint i = 0; i < votersAddressArray.length; i++) {
+            delete voters[votersAddressArray[i]];
+        }
+        workflowStatus = WorkflowStatus(0);
+        delete proposalsArray;
+        delete winningProposalID;
+        lastSessionBlock = block.number;
+        emit LogResetVotingSystem();
     }
 }
