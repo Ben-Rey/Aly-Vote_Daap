@@ -92,7 +92,7 @@ const OwnerControl = () => {
           {registeringVoters && (
             <>
               {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
-              <label htmlFor={`add-voter-modal" className="modal-button btn`}>
+              <label htmlFor="add-voter-modal" className="modal-button btn">
                 Add Voter
               </label>
               <ModalAddVoter onAdd={addVoter} />
