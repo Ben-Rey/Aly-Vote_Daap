@@ -1,5 +1,5 @@
 import { useEth } from 'context'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const useEvent = (event: string, onSuccessCallback: any) => {
   const {
@@ -7,14 +7,17 @@ const useEvent = (event: string, onSuccessCallback: any) => {
     dispatch
   } = useEth()
 
+  const [listener, setListener] = useState<any>(null)
+
   const setVoterRegisteredEvent = useCallback(async () => {
     if (contract && event) {
-      await contract.events[event]()
+      const emitter = await contract.events[event]()
         .on('data', (newEvent: any) => {
           onSuccessCallback(newEvent)
         })
         .on('changed', (changed: any) => console.log(changed))
         .on('error', (err: any) => alert(err))
+      setListener(emitter)
 
       dispatch({ type: 'REGISTER_EVENT', data: event })
     }
@@ -22,7 +25,7 @@ const useEvent = (event: string, onSuccessCallback: any) => {
 
   useEffect(() => {
     if (!events.includes(event)) setVoterRegisteredEvent()
-  }, [event, events, setVoterRegisteredEvent])
+  }, [event, events, listener, setVoterRegisteredEvent])
 
   return { events }
 }

@@ -20,8 +20,6 @@ const useProposals = () => {
     dispatch
   } = useEth()
 
-  // useEvent('ProposalRegistered', () => console.log('Proposal Registered!'))
-
   const getProposals = useCallback(async () => {
     if (status && accounts) {
       const option = {
@@ -58,7 +56,6 @@ const useProposals = () => {
       const res = await contract.methods.addProposal(proposal).send({
         from: accounts[0]
       })
-      toast('Proposal Added!')
       getProposals()
     }
   }

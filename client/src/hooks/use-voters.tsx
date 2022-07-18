@@ -62,8 +62,6 @@ const useVoters = () => {
       })
       getVoters()
       getRole()
-      toast('Voter Added!')
-
       // TODO: Get revert
     }
   }

@@ -57,7 +57,7 @@ const reducer = (state: any, action: { type: string; data: any }) => {
         proposals: [],
         winningProposalId: null,
         userInfo: null,
-        voters: null
+        voters: []
       }
 
     default:

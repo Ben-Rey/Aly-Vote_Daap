@@ -1,15 +1,15 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable tailwindcss/no-custom-classname */
-import BN from 'bn.js'
 import useUser from 'hooks/use-user'
 import VoterView from 'views/VotersView'
 import useStatus from 'hooks/use-status'
-import { actions, useEth } from 'context'
+import { useEth } from 'context'
 import Header from 'components/Header/Header'
 import useProposals from 'hooks/use-proposal'
 import ErrorBoundary from 'utils/ErrorBoundary'
 import ProposalView from './views/ProposalsView'
 import OwnerControl from 'views/OwnerControlView'
-import { toast, ToastContainer } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import { getStatusIdByFunction, networks } from 'utils'
 import Navigation from 'components/Navigation/Navigation'
 import { ExclamationCircleIcon } from '@heroicons/react/solid'
@@ -19,15 +19,10 @@ import { Fragment, useCallback, useEffect, useState } from 'react'
 import NotConnectedInfo from 'components/NotConnectedInfo/NotConnectedInfo'
 import 'App.css'
 
-// TODO: Verifier toutes les actions qui pourraient revert
-// TODO: Verifier les deconnection de compte
-
 function App() {
   const {
-    state: { accounts, chainId, web3, contract },
-    dispatch
+    state: { accounts, chainId }
   } = useEth()
-  const [events, setEvents] = useState(false)
 
   const networkEnv = import.meta.env.VITE_APP_NETWORK as string
   const { getRole, isVoter, isOwner, userInfo } = useUser()
@@ -36,45 +31,9 @@ function App() {
   const [wrongNetwork, setWrongNetwork] = useState(false)
   const isConnected = accounts && accounts.length > 0
   const isReady = isConnected && status
-  const notifyError = (account: string) => toast('You changed your account ')
   const isPropRegistration =
     status &&
     status?.toNumber() >= getStatusIdByFunction('ProposalsRegistrationStarted')
-
-  useEffect(() => {
-    if (contract && window.ethereum && !events) {
-      window.ethereum.on('accountsChanged', (_accounts) => {
-        notifyError(_accounts[0])
-        getRole()
-      })
-      contract.events.ProposalRegistered().on('data', (newEvent: any) => {
-        console.log('Proposal Registered!')
-      })
-
-      contract.events
-        .WorkflowStatusChange()
-        .on('data', (event: { returnValues: { newStatus: any } }) => {
-          const { newStatus } = event.returnValues
-          // const newStatus = new BN(newStatus).toNumber()
-          toast('Status changed')
-          dispatch({
-            type: actions.setStatus,
-            data: new BN(newStatus)
-          })
-        })
-
-      contract.events.LogResetVotingSystem().on('data', (newEvent: any) => {
-        toast('Voting System Reset!')
-      })
-      contract.events.Voted().on('data', (newEvent: any) => {
-        toast('Your Vote has been recorded!')
-      })
-      contract.events.VoterRegistered().on('data', (newEvent: any) => {
-        console.log('Voter Added!')
-      })
-      setEvents(true)
-    }
-  }, [contract])
 
   useEffect(() => {
     if (!status) return
@@ -157,3 +116,11 @@ function App() {
 }
 
 export default App
+
+// if (contract && window.ethereum && !events) {
+//   window.ethereum.on('accountsChanged', (_accounts) => {
+//     notifyError(_accounts[0])
+//     getRole()
+//   })
+
+// }

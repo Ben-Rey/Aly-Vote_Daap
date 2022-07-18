@@ -4,6 +4,9 @@ import Web3 from 'web3'
 import EthContext from './EthContext'
 import { reducer, actions, initialState } from './state'
 import './walletEvent'
+import useEvent from '../hooks/use-event'
+import { toast } from 'react-toastify'
+import BN from 'bn.js'
 
 const network = import.meta.env.VITE_APP_NETWORK as string
 
@@ -11,6 +14,7 @@ const CHAIN_ID_HEX = networks[network].chainId.toString(16)
 
 // Erreur si pas metamask
 function EthProvider({ children }: { children: React.ReactNode }) {
+  const [eventArray, setEventArray] = useState<any[]>([])
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const checkNetwork = useCallback(async (web3: any) => {
@@ -102,6 +106,59 @@ function EthProvider({ children }: { children: React.ReactNode }) {
       events.forEach((e) => window.ethereum.removeListener(e, handleChange))
     }
   }, [init, state.artifact])
+
+  useEffect(() => {
+    const { contract } = state
+    if (contract && window.ethereum) {
+      // window.ethereum.on('accountsChanged', (_accounts) => {
+      //   notifyError(_accounts[0])
+      //   getRole()
+      // })
+
+      !eventArray.includes('ProposalRegistered') &&
+        contract.events.ProposalRegistered().on('data', () => {
+          toast('Proposal Registered!')
+        })
+
+      !eventArray.includes('WorkflowStatusChange') &&
+        contract.events
+          .WorkflowStatusChange()
+          .on('data', (event: { returnValues: { newStatus: any } }) => {
+            const { newStatus } = event.returnValues
+            // const newStatus = new BN(newStatus).toNumber()
+            toast('Status changed')
+            dispatch({
+              type: actions.setStatus,
+              data: new BN(newStatus)
+            })
+          })
+
+      !eventArray.includes('LogResetVotingSystem') &&
+        contract.events.LogResetVotingSystem().on('data', () => {
+          toast('Voting System Reset!')
+          dispatch({
+            type: actions.reset,
+            data: null
+          })
+        })
+      !eventArray.includes('Voted') &&
+        contract.events.Voted().on('data', () => {
+          toast('Your Vote has been recorded!')
+        })
+      !eventArray.includes('VoterRegistered') &&
+        contract.events.VoterRegistered().on('data', () => {
+          toast('Voter Added!')
+        })
+
+      setEventArray([
+        'ProposalRegistered',
+        'WorkflowStatusChange',
+        'LogResetVotingSystem',
+        'Voted',
+        'VoterRegistered'
+      ])
+    }
+  }, [state.contract])
 
   return (
     <EthContext.Provider

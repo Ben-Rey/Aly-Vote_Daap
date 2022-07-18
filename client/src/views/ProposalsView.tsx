@@ -28,11 +28,6 @@ const ProposalView = ({ status }: { status: BN }) => {
   const votesTallied =
     status?.toNumber() >= getStatusIdByFunction('VotesTallied')
 
-  // const { status: getPropStatus, value: getPropValue } =
-  //   useAsync(fetchProposals)
-
-  // const proposalList = getPropValue as string[]
-
   const addNewProposal = async (text: string) => {
     await addProposal(text)
   }

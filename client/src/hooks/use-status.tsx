@@ -1,9 +1,7 @@
-import BN from 'bn.js'
 import { actions } from 'context'
 import { useCallback, useEffect, useState } from 'react'
 import useEth from '../context/useEth'
-import useEvent from './use-event'
-import { toast } from 'react-toastify'
+import useVoters from 'hooks/use-voters'
 
 const useStatus = () => {
   const {
@@ -12,24 +10,7 @@ const useStatus = () => {
   } = useEth()
   const [statusLoading, setStatusLoading] = useState(false)
 
-  // useEvent(
-  //   'WorkflowStatusChange',
-  //   (event: { returnValues: { newStatus: any } }) => {
-  //     const { newStatus } = event.returnValues
-  //     // const newStatus = new BN(newStatus).toNumber()
-  //     dispatch({
-  //       type: actions.setStatus,
-  //       data: new BN(newStatus)
-  //     })
-  //   }
-  // )
-
-  // useEvent(
-  //   'LogResetVotingSystem',
-  //   (event: { returnValues: { newStatus: any } }) => {
-  //     toast('Voting System Reset!')
-  //   }
-  // )
+  const { getVoters } = useVoters()
 
   const restVotingSystem = useCallback(async () => {
     if (contract && accounts) {
@@ -39,9 +20,9 @@ const useStatus = () => {
         type: actions.reset,
         data: null
       })
+      dispatch({ type: 'SET_VOTERS', data: [] })
     }
-    window.location.reload()
-  }, [contract, accounts, dispatch])
+  }, [contract, accounts, dispatch, getVoters])
 
   const reloadStatus = useCallback(async () => {
     if (contract && accounts) {

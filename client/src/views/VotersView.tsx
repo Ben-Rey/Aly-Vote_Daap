@@ -1,4 +1,6 @@
 import IUser from 'models/IUser'
+import { toast } from 'react-toastify'
+import useEvent from '../hooks/use-event'
 
 const VoterView = ({ userInfo }: { userInfo: IUser }) => {
   return (
