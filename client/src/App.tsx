@@ -1,25 +1,23 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import ProposalView from './views/ProposalsView'
-import MemoizedGlobalInfo from 'components/GlobalInfo/GlobalInfo'
-import OwnerControl from 'views/OwnerControlView'
-import Header from 'components/Header/Header'
-import ErrorBoundary from 'utils/ErrorBoundary'
-import Navigation from 'components/Navigation/Navigation'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import VoterView from 'views/VotersView'
-import NotConnectedInfo from 'components/NotConnectedInfo/NotConnectedInfo'
-import { Fragment, useCallback, useEffect, useState } from 'react'
-import { actions, useEth } from 'context'
-import useStatus from 'hooks/use-status'
-import useProposals from 'hooks/use-proposal'
+import BN from 'bn.js'
 import useUser from 'hooks/use-user'
+import VoterView from 'views/VotersView'
+import useStatus from 'hooks/use-status'
+import { actions, useEth } from 'context'
+import Header from 'components/Header/Header'
+import useProposals from 'hooks/use-proposal'
+import ErrorBoundary from 'utils/ErrorBoundary'
+import ProposalView from './views/ProposalsView'
+import OwnerControl from 'views/OwnerControlView'
 import { toast, ToastContainer } from 'react-toastify'
 import { getStatusIdByFunction, networks } from 'utils'
-import 'App.css'
+import Navigation from 'components/Navigation/Navigation'
 import { ExclamationCircleIcon } from '@heroicons/react/solid'
-import useEvent from 'hooks/use-event'
-import BN from 'bn.js'
-import useVoters from 'hooks/use-voters'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import MemoizedGlobalInfo from 'components/GlobalInfo/GlobalInfo'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import NotConnectedInfo from 'components/NotConnectedInfo/NotConnectedInfo'
+import 'App.css'
 
 // TODO: Verifier toutes les actions qui pourraient revert
 // TODO: Verifier les deconnection de compte
@@ -31,25 +29,22 @@ function App() {
   } = useEth()
   const [events, setEvents] = useState(false)
 
-  const [loading, setLoading] = useState(true)
   const networkEnv = import.meta.env.VITE_APP_NETWORK as string
   const { getRole, isVoter, isOwner, userInfo } = useUser()
-  const { getVoters } = useVoters()
   const { status } = useStatus()
-
   const { getProposals } = useProposals()
   const [wrongNetwork, setWrongNetwork] = useState(false)
   const isConnected = accounts && accounts.length > 0
   const isReady = isConnected && status
+  const notifyError = (account: string) => toast('You changed your account ')
   const isPropRegistration =
     status &&
     status?.toNumber() >= getStatusIdByFunction('ProposalsRegistrationStarted')
-  const notifyError = (account: string) => toast('You changed your account ')
 
   useEffect(() => {
     if (contract && window.ethereum && !events) {
-      window.ethereum.on('accountsChanged', (accounts) => {
-        notifyError(accounts[0])
+      window.ethereum.on('accountsChanged', (_accounts) => {
+        notifyError(_accounts[0])
         getRole()
       })
       contract.events.ProposalRegistered().on('data', (newEvent: any) => {
@@ -62,7 +57,6 @@ function App() {
           const { newStatus } = event.returnValues
           // const newStatus = new BN(newStatus).toNumber()
           toast('Status changed')
-
           dispatch({
             type: actions.setStatus,
             data: new BN(newStatus)
@@ -76,7 +70,7 @@ function App() {
         toast('Your Vote has been recorded!')
       })
       contract.events.VoterRegistered().on('data', (newEvent: any) => {
-        toast('Voter Added!')
+        console.log('Voter Added!')
       })
       setEvents(true)
     }
@@ -100,14 +94,6 @@ function App() {
       getProposals()
     }
   }, [getProposals, isPropRegistration, isVoter])
-
-  useEffect(() => {
-    web3 && setLoading(false)
-  }, [setLoading, web3])
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
 
   return (
     <ErrorBoundary>
@@ -171,9 +157,3 @@ function App() {
 }
 
 export default App
-
-// TODO: Add User info -> voted proposal, created proposal etc.
-
-// ownership
-// Voter
-// Not alloawed to vote

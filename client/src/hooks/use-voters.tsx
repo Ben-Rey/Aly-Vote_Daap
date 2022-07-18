@@ -53,6 +53,7 @@ const useVoters = () => {
 
       if (voter.isRegistered) {
         toast('Voter already registered!')
+
         return
       }
 
@@ -61,6 +62,7 @@ const useVoters = () => {
       })
       getVoters()
       getRole()
+      toast('Voter Added!')
 
       // TODO: Get revert
     }

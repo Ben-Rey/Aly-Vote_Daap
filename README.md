@@ -15,3 +15,5 @@ npm install
 https://octopus-app-wlgjk.ondigitalocean.app/
 
 ## ⚙️ Video Link
+- App Video https://www.loom.com/share/a680a9fea6854dea9549dccdaa21d36e
+- Code Vidéo https://www.loom.com/share/d432d33c83f64306ad6f34dbe884fcf0

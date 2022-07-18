@@ -40,6 +40,7 @@ const useStatus = () => {
         data: null
       })
     }
+    window.location.reload()
   }, [contract, accounts, dispatch])
 
   const reloadStatus = useCallback(async () => {
