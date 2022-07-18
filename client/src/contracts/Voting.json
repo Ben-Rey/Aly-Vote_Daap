@@ -16311,6 +16311,12 @@
     "version": "0.8.14+commit.80d49f37.Emscripten.clang"
   },
   "networks": {
+    "3": {
+      "events": {},
+      "links": {},
+      "address": "0xD1f3Fb5C25014256cE3e3cB1af225Da2AE3a88c6",
+      "transactionHash": "0x6c9b1e6ff6027f1b99241cdaa3d58ec6185256dc603f7d0620dc4d816bd129e8"
+    },
     "1658134220361": {
       "events": {},
       "links": {},
@@ -16337,7 +16343,7 @@
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-07-18T19:03:00.734Z",
+  "updatedAt": "2022-07-18T21:11:16.101Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "Benjamin Reynes benjmain@morio.co",
