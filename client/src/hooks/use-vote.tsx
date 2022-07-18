@@ -13,11 +13,9 @@ const useVote = () => {
   const { getProposals } = useProposals()
   const { getVoters } = useVoters()
 
-  useEvent('Voted', () => {
-    getProposals()
-    getVoters()
-    toast('Your Vote has been recorded!')
-  })
+  // useEvent('Voted', () => {
+  //   toast('Your Vote has been recorded!')
+  // })
 
   // INPROGRESS: Add voter
   const vote = async (id: BN) => {
@@ -37,6 +35,9 @@ const useVote = () => {
       const res = await contract.methods.setVote(id).send({
         from: accounts[0]
       })
+
+      getProposals()
+      getVoters()
       // TODO: Get revert
     }
   }

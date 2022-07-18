@@ -12,24 +12,24 @@ const useStatus = () => {
   } = useEth()
   const [statusLoading, setStatusLoading] = useState(false)
 
-  useEvent(
-    'WorkflowStatusChange',
-    (event: { returnValues: { newStatus: any } }) => {
-      const { newStatus } = event.returnValues
-      // const newStatus = new BN(newStatus).toNumber()
-      dispatch({
-        type: actions.setStatus,
-        data: new BN(newStatus)
-      })
-    }
-  )
+  // useEvent(
+  //   'WorkflowStatusChange',
+  //   (event: { returnValues: { newStatus: any } }) => {
+  //     const { newStatus } = event.returnValues
+  //     // const newStatus = new BN(newStatus).toNumber()
+  //     dispatch({
+  //       type: actions.setStatus,
+  //       data: new BN(newStatus)
+  //     })
+  //   }
+  // )
 
-  useEvent(
-    'LogResetVotingSystem',
-    (event: { returnValues: { newStatus: any } }) => {
-      toast('Voting System Reset!')
-    }
-  )
+  // useEvent(
+  //   'LogResetVotingSystem',
+  //   (event: { returnValues: { newStatus: any } }) => {
+  //     toast('Voting System Reset!')
+  //   }
+  // )
 
   const restVotingSystem = useCallback(async () => {
     if (contract && accounts) {

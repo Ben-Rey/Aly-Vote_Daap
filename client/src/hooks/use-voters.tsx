@@ -3,12 +3,15 @@ import { toast } from 'react-toastify'
 import useEth from '../context/useEth'
 import useEvent from './use-event'
 import IUser from '../models/IUser'
+import useUser from './use-user'
 
 const useVoters = () => {
   const {
     state: { status, contract, accounts, voters, lastSessionBlock },
     dispatch
   } = useEth()
+
+  const { getRole } = useUser()
 
   const getVoters = useCallback(async () => {
     if (status && accounts) {
@@ -32,12 +35,11 @@ const useVoters = () => {
       }
       dispatch({ type: 'SET_VOTERS', data })
     }
-  }, [status, accounts, contract, dispatch])
+  }, [status, accounts, lastSessionBlock, contract, dispatch])
 
-  useEvent('VoterRegistered', () => {
-    getVoters()
-    toast('Voter Added!')
-  })
+  // useEvent('VoterRegistered', () => {
+  //   console.log('Voter Added!')
+  // })
   // INPROGRESS: Add voter
   const addVoter = async (address: string) => {
     // check if already registered
@@ -57,6 +59,8 @@ const useVoters = () => {
       const res = await contract.methods.addVoter(address).send({
         from: accounts[0]
       })
+      getVoters()
+      getRole()
 
       // TODO: Get revert
     }

@@ -63,3 +63,11 @@ export const getStatusIdByFunction = (functionName: string) => {
   const index = votingStatus.findIndex((s) => s.function === functionName)
   return index
 }
+
+export const networks = {
+  local: { url: 'ws://localhost:8545', chainId: 1337 },
+  ropsten: {
+    url: `wss://ropsten.infura.io/ws/v3/${import.meta.env.VITE_INFURA_ID}`,
+    chainId: 3
+  }
+}

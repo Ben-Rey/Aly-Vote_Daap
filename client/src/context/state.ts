@@ -9,7 +9,8 @@ const actions = {
   registerEvent: 'REGISTER_EVENT',
   setUserInfo: 'SET_USER_INFO',
   setVoters: 'SET_VOTERS',
-  reset: 'RESET'
+  reset: 'RESET',
+  setChainId: 'SET_CHAIN_ID'
 }
 
 const initialState = {
@@ -24,7 +25,8 @@ const initialState = {
   events: [],
   userInfo: null,
   voters: null,
-  lastSessionBlock: new BN(0)
+  lastSessionBlock: new BN(0),
+  chaiId: null
 }
 
 const reducer = (state: any, action: { type: string; data: any }) => {
@@ -46,6 +48,8 @@ const reducer = (state: any, action: { type: string; data: any }) => {
       return { ...state, userInfo: data }
     case actions.setVoters:
       return { ...state, voters: data }
+    case actions.setChainId:
+      return { ...state, chainId: data }
     case actions.reset:
       return {
         ...state,

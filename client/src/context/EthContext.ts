@@ -16,6 +16,7 @@ interface IEthContext {
     userInfo: any | null
     voters: IUser[] | null
     lastSessionBlock: BN | null
+    chainId: number | null | string
   }
   dispatch: Dispatch<{ type: string; data: any }>
 }
@@ -33,7 +34,8 @@ const EthContext = createContext<IEthContext>({
     events: [],
     voters: null,
     userInfo: null,
-    lastSessionBlock: new BN(0)
+    lastSessionBlock: new BN(0),
+    chainId: null
   },
   dispatch: () => console.log('Test')
 })

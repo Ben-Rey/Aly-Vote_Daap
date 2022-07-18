@@ -1,17 +1,11 @@
-import React, { useReducer, useCallback, useEffect } from 'react'
+import React, { useReducer, useCallback, useEffect, useState } from 'react'
+import { networks } from 'utils'
 import Web3 from 'web3'
 import EthContext from './EthContext'
 import { reducer, actions, initialState } from './state'
+import './walletEvent'
 
 const network = import.meta.env.VITE_APP_NETWORK as string
-
-const networks = {
-  local: { url: 'ws://localhost:8545', chainId: 1337 },
-  ropsten: {
-    url: `wss://ropsten.infura.io/ws/v3/${import.meta.env.VITE_INFURA_ID}`,
-    chainId: 3
-  }
-}
 
 const CHAIN_ID_HEX = networks[network].chainId.toString(16)
 
@@ -21,7 +15,7 @@ function EthProvider({ children }: { children: React.ReactNode }) {
 
   const checkNetwork = useCallback(async (web3: any) => {
     const ChainId = await web3.eth.getChainId()
-
+    dispatch({ type: 'SET_CHAIN_ID', data: ChainId })
     if (ChainId !== networks[network]) {
       try {
         await web3.eth.net.getNetworkType()
@@ -35,10 +29,17 @@ function EthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  useEffect(() => {
+    if (state.web3) {
+      window.ethereum.on('chainChanged', (_chainId: any) => {
+        dispatch({ type: 'SET_CHAIN_ID', data: _chainId })
+      })
+    }
+  }, [state])
+
   const init = useCallback(
     async (artifact: any) => {
       if (artifact) {
-        console.log(Web3.givenProvider)
         const web3 = new Web3(
           Web3.givenProvider ||
             new Web3.providers.WebsocketProvider(networks[network])

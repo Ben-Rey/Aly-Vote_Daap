@@ -20,7 +20,8 @@ const useUser = () => {
         setIsVoter(res.isRegistered)
         dispatch({ type: 'SET_USER_INFO', data: res })
       } catch (err) {
-        // console.error(err)
+        setIsVoter(false)
+        setIsOwner(false)
       }
 
       // TODO: Store owner
