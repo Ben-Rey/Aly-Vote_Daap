@@ -9,18 +9,18 @@
 ### Client
 ```sh
 npm install
-// Local
+# Local
 npm run dev 
-// Prod
+# Prod
 npm run build
 ```
 
 ### Truffle
 ```sh
 npm install
-// local
+# local
 truffle migrate
-// TestNet
+# TestNet
 truffle migrate --network ropsten
 ```
 
